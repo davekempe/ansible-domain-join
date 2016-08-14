@@ -43,30 +43,4 @@ pri_domain_name: example.org  #defines primary domain name.
 Dependencies
 ------------
 
-None
-
-Example Playbook
-----------------
-#### Galaxy
------------
-    - hosts: servers
-      roles:
-         - { role: mrlesmithjr.domain-join }
-#### GitHub
------------
-    - hosts: servers
-      roles:
-        - ansible-domain-join
-
-License
--------
-
-BSD
-
-Author Information
-------------------
-
-Larry Smith Jr.
-- @mrlesmithjr
-- http://everythingshouldbevirtual.com
-- mrlesmithjr [at] gmail.com
+None 
