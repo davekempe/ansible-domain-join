@@ -1,0 +1,18 @@
+- name: redhat | Adding PowerBroker Identity Services repo
+  shell: 'sudo wget -O /etc/yum.repos.d/pbiso.repo {{ pbis_yum_repo }}'
+
+  - name: redhat | Installing pbis-open
+    shell: 'sudo yum -y install pbis-open'
+
+#- name: redhat | Checking the domain status
+#  shell: /opt/pbis/bin/lsa get-status |grep Netbios |awk '{print $3}'
+#  register: domain_status
+
+ - name: redhat | Joining host to active directory domain
+   command: 'domainjoin-cli join --ou {{ ad_ou }} {{ ad_domain }} {{ ad_user }} {{ ad_password }}'
+   when:  domain_status.stdout != "{{ ad_domain_netbios }}"
+
+
+  #There isnt Domain user yet.
+  #Waiting for Claude's approval.
+  #Therefor I commited all the project.
