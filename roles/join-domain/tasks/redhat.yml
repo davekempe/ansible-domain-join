@@ -7,7 +7,13 @@
     mode: 0744
 
 - name: redhat | Installing pbis-open from yum repo
-  yum: name=pbis-open enablerepo=pbiso state=present update_cache=yes
+  yum: name=pbis-open-upgrade state=latest update_cache=yes
+
+- name: redhat | Installing pbis-open from yum repo
+  yum: name=pbis-open state=latest update_cache=yes
+
+- name: redhat | Check that lwsmd (pbis-open) service is up
+  service: name=lwsmd state=started enabled=yes
 
 - name: Fix issues on RedHat or centOS 6 versions, soft link
   file: src=/etc/pbis/redhat/lwsmd dest=/etc/init.d/lwsmd state=link
@@ -18,7 +24,7 @@
   when: ansible_distribution_major_version == "6"
 
 - name: redhat | checking the Domain status
-  shell: /opt/pbis/bin/lsa get-status |grep Netbios |awk '{print $3}'
+  shell: /opt/pbis/bin/lsa get-status |grep Netbios |awk '{print $3}'yun
   register: domain_status
 
 - name: redhat | Joining host to active directory domain
@@ -35,7 +41,7 @@
 - name: redhat | granting sudo rights to Domain Groups
   lineinfile:
     dest: /etc/sudoers
-    line: "%{{ ad_domain_netbios }}\\\\\\{{ item }} ALL=(ALL) ALL"
+    line: "%{{ ad_domain_netbios }}\\\\{{ item }} ALL=(ALL:ALL) ALL"
     state: present
     validate: 'visudo -cf %s'
   with_items: domain_sudo_groups
