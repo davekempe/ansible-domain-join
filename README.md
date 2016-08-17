@@ -2,7 +2,7 @@ Join Domain
 
 Prerequisites:
 
-To work with AWS VPC first edit the VPC DHCP option to resole the domain name and the DNS address.
+To work with AWS VPC first edit the VPC DHCP option to resolve the domain name and the DNS address.
 Otherwise the /etc/resolv.conf will be overwritten.
 
 Vars:
