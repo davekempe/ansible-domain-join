@@ -12,9 +12,6 @@
 - name: redhat | Installing pbis-open from yum repo
   yum: name=pbis-open state=latest update_cache=yes
 
-- name: redhat | Check that lwsmd (pbis-open) service is up
-  service: name=lwsmd state=started enabled=yes
-
 - name: Fix issues on RedHat or centOS 6 versions, soft link
   file: src=/etc/pbis/redhat/lwsmd dest=/etc/init.d/lwsmd state=link
   when: ansible_distribution_major_version == "6"
