@@ -38,7 +38,7 @@
     line: "%{{ ad_domain_netbios }}\\\\{{ item }} ALL=(ALL:ALL) ALL"
     state: present
     validate: 'visudo -cf %s'
-  with_items: domain_sudo_groups
+  with_items: {{domain_sudo_groups}}
 
 ##########################
 ######pbis condfig########
