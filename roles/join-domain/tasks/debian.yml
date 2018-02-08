@@ -4,6 +4,7 @@
 - name: debian | Add apt key
   apt_key:
     url: "{{apt_key}}"
+    state: present
 
 - name: debian | Adding PowerBroker Identity Service repo
   get_url:
@@ -20,9 +21,10 @@
 - name: debian | checking the Domain status
   shell: /opt/pbis/bin/lsa get-status |grep Netbios |awk '{print $3}'
   register: domain_status
+  changed_when: false
 
 - name: debian | Joining host to AD domain
-  command: 'domainjoin-cli join --ou {{ ad_ou }} {{ ad_domain }} {{ ad_user }} {{ ad_password }}'
+  command: 'domainjoin-cli join "{{ ad_domain }}" "{{ ad_user }}" "{{ ad_password }}"'
   when:  domain_status.stdout != "{{ ad_domain_netbios }}"
 
 - name: debian | setting includedir in sudoers
@@ -40,11 +42,73 @@
     validate: 'visudo -cf %s'
   with_items: "{{ domain_sudo_groups }}"
 
-##########################
-######pbis condfig########
-#sudo /opt/pbis/bin/config UserDomainPrefix $domain
-#sudo /opt/pbis/bin/config AssumeDefaultDomain true
-#sudo /opt/pbis/bin/config LoginShellTemplate /bin/bash
-#sudo /opt/pbis/bin/config HomeDirTemplate %H/%U
-#sudo /opt/pbis/bin/config RequireMembershipOf "$domain\\$securitygroup"
-###########################
+- name: debian | Checking UserDomainPrefix
+  shell: /opt/pbis/bin/config --show UserDomainPrefix
+  register: UserDomainPrefix
+  changed_when: false
+
+- name: debian | Checking AssumeDefaultDomain
+  shell: /opt/pbis/bin/config --show AssumeDefaultDomain
+  register: AssumeDefaultDomain
+  changed_when: false
+
+- name: debian | Checking LoginShellTemplate
+  shell: /opt/pbis/bin/config --show LoginShellTemplate
+  register: LoginShellTemplate
+  changed_when: false
+
+- name: debian | Checking Local_LoginShellTemplate
+  shell: /opt/pbis/bin/config --show Local_LoginShellTemplate
+  register: Local_LoginShellTemplate
+  changed_when: false
+
+- name: debian | Checking Local_HomeDirTemplate
+  shell: /opt/pbis/bin/config --show Local_HomeDirTemplate
+  register: Local_HomeDirTemplate
+  changed_when: false
+
+- name: debian | Checking HomeDirTemplate
+  shell: /opt/pbis/bin/config --show HomeDirTemplate
+  register: HomeDirTemplate
+  changed_when: false
+
+- name: debian | CRequireMembershipOf
+  shell: /opt/pbis/bin/config --show RequireMembershipOf
+  register: RequireMembershipOf
+  changed_when: false
+
+- name: debian | setting domain prefix
+  command: '/opt/pbis/bin/config UserDomainPrefix {{ ad_domain }}'
+  when:
+    UserDomainPrefix.stdout_lines.1 != "{{ ad_domain }}"
+
+- name: debian | assume default domain
+  command: '/opt/pbis/bin/config AssumeDefaultDomain true'
+  when:
+    AssumeDefaultDomain.stdout_lines.1 != "true"
+
+- name: debian | setting default shell to bash
+  command: '/opt/pbis/bin/config LoginShellTemplate /bin/bash'
+  when:
+    LoginShellTemplate.stdout_lines.1 != "/bin/bash"
+
+- name: debian | setting default shell to bash
+  command: '/opt/pbis/bin/config Local_LoginShellTemplate /bin/bash'
+  when:
+    Local_LoginShellTemplate.stdout_lines.1 != "/bin/bash"
+
+- name: debian | setting default home directory
+  command: '/opt/pbis/bin/config HomeDirTemplate %H/%U'
+  when:
+    HomeDirTemplate.stdout_lines.1 != "%H/%U"
+
+- name: debian | setting default home directory template
+  command: '/opt/pbis/bin/config Local_HomeDirTemplate %H/%U'
+  when:
+    Local_HomeDirTemplate.stdout_lines.1 != "%H/%U"
+
+- name: debian | requiring membership of security group
+  command: '/opt/pbis/bin/config RequireMembershipOf "{{ ad_domain }}\\{{ domain_sudo_groups }}"'
+  when:
+    RequireMembershipOf.stdout_lines.1 != "{{ ad_domain }}\\{{ domain_sudo_groups }}"
+
