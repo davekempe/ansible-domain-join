@@ -21,11 +21,12 @@
   when: ansible_distribution_major_version == "6"
 
 - name: redhat | checking the Domain status
-  shell: /opt/pbis/bin/lsa get-status |grep Netbios |awk '{print $3}'yun
+  shell: /opt/pbis/bin/lsa get-status | grep Netbios | awk '{print $3}'
   register: domain_status
 
 - name: redhat | Joining host to active directory domain
-  command: 'domainjoin-cli join --ou {{ ad_ou }} {{ ad_domain }} {{ ad_user }} {{ ad_password }}'
+# command: 'domainjoin-cli join --ou {{ ad_ou }} {{ ad_domain }} {{ ad_user }} {{ ad_password }}'
+  command: 'domainjoin-cli join {{ ad_domain }} {{ ad_user }} {{ ad_password }}'
   when:  domain_status.stdout != "{{ ad_domain_netbios }}"
 
 - name: redhat | setting includedir in sudoers

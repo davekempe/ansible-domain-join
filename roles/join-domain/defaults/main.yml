@@ -2,12 +2,12 @@
 # vars file for ansible-domain-join
 pbis_apt_repo: "http://repo.pbis.beyondtrust.com/apt/pbiso.list"
 pbis_yum_repo: "http://repo.pbis.beyondtrust.com/yum/pbiso.repo"
-ad_password: "" # enter your domain user account password to join AD --- Better to prompt for this in playbook
-ad_user: ""  # enter your domain user account to join AD --- Better to prompt for this in playbook
-ad_domain: ""
-ad_ou: "" #define active directory OU to place computer accounts
-ad_domain_netbios: ""   # enter NETBIOS name...ex...example.org = EXAMPLE
-domain_sudo_groups: "" #define AD Groups to grant sudo rights....domain admins is best at the very least...
-pri_domain_name:   #defines primary domain name.
+ad_password: ""                                                  # enter your domain user account password to join AD --- Better to prompt for this in playbook
+ad_user: ""                                                      # enter your domain user account to join AD --- Better to prompt for this in playbook
+ad_domain: "corp.contoso.com"                                    # enter the FQDN to join to -- eg. corp.contoso.com
+ad_ou: ""                                                        # define active directory OU to place computer accounts (would require modifying the debian tasks 
+ad_domain_netbios: "CONTOSO"                                     # enter NETBIOS name...ex...example.org = EXAMPLE -- ensure you use all capital letters
+domain_sudo_groups: "IT-Staff"                                   # define AD Groups to grant sudo rights....domain admins is best at the very least...
+pri_domain_name: "CORP"                                          # defines primary domain name, was previously unused in tasks files, now am using for prefix
 apt_key: "http://repo.pbis.beyondtrust.com/apt/RPM-GPG-KEY-pbis"
 yum_key: "http://repo.pbis.beyondtrust.com/yum/RPM-GPG-KEY-pbis"
